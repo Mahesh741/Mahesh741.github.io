@@ -6,7 +6,7 @@
  *   - "protected" asks an admission gate first (AIMD concurrency limit + byte budget +
  *     per-workflow quota). What is not admitted stays in the broker as lag.
  *
- * The gate logic mirrors the Java library in projects/backpressure.
+ * The gate logic mirrors the Java library in the kafka-backpressure repository.
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();

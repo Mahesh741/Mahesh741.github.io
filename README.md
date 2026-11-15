@@ -1,7 +1,15 @@
 # Portfolio
 
-Single-page portfolio and resume site. No build step: `index.html` is the whole site.
+Source of https://mahesh741.github.io: a single-page portfolio plus the live demo pages.
+There is no build step.
 
-- **Photo:** save a square picture as `assets/profile.jpg` (600x600 or larger). Until it exists, the page shows initials.
-- **Resume:** replace `Mahesh_HL_Resume.pdf` to update the download.
-- **Content:** edit the text directly in `index.html`.
+- `index.html`: the portfolio. Edit the text directly.
+- `assets/profile.jpg`: the photo (square, 600x600 or larger looks best).
+- `Mahesh_HL_Resume.pdf`: the file behind the "Download resume" buttons.
+- `demos/`: the in-browser demos, one folder per project.
+
+Project source code lives in its own repositories:
+
+- https://github.com/Mahesh741/kafka-backpressure
+- https://github.com/Mahesh741/order-processing-system
+- https://github.com/Mahesh741/rag-qa-system

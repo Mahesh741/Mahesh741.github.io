@@ -2,7 +2,7 @@
  * A small retrieval pipeline that runs in the browser (and in Node for tests):
  *   chunk -> index (BM25) -> retrieve -> answer from the retrieved text, with citations.
  *
- * The full project in projects/rag-qa has the same shape, with OpenAI embeddings in Qdrant
+ * The full project in the rag-qa-system repository has the same shape, with OpenAI embeddings in Qdrant
  * for retrieval and an LLM for the answer. Nothing here calls a server.
  */
 (function (root, factory) {

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  // Mirrors application.yml in projects/order-processing.
+  // Mirrors application.yml in the order-processing-system repository.
   var MAIN = 'orders.created';
   var ATTEMPTS = 4;                    // 1 delivery + 3 retries
   var DELAYS = [1000, 2000, 4000];     // backoff before retry-0, retry-1, retry-2

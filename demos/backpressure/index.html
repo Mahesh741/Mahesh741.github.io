@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kafka Backpressure Simulator — Mahesh H L</title>
+<meta name="description" content="Interactive simulation of memory-aware Kafka backpressure: AIMD adaptive concurrency, a byte budget and per-workflow quotas, next to a consumer without them.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b6e63'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/demo.css">
+<script src="../assets/demo.js"></script>
+<style>
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 24px; }
+  .controls .group { display: flex; gap: 8px; align-items: center; }
+  .slider { display: grid; gap: 2px; min-width: 190px; flex: 1 1 190px; max-width: 260px; }
+  .slider label { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .slider label b { color: var(--ink); font-weight: 600; }
+  .slider input { width: 100%; accent-color: var(--accent); margin: 0; }
+  .hint { margin-top: 12px; font-size: 14px; color: var(--muted); }
+  .hint b { color: var(--ink); font-weight: 600; }
+
+  .systems { margin-top: 20px; }
+  .sys-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .sys-head h2 { display: inline-flex; align-items: center; gap: 9px; font-size: 18px; font-weight: 600; }
+  .key { display: inline-block; width: 14px; height: 0; border-top: 3px solid; border-radius: 2px; flex: none; }
+  .key.s1 { border-color: var(--series-1); }
+  .key.s2 { border-color: var(--series-2); }
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+  .tile .label { font-size: 12.5px; color: var(--muted); }
+  .tile .value { font-size: 24px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; line-height: 1.2; }
+  .heap { margin-top: 14px; }
+  .heap .label { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); }
+  .heap .label b { color: var(--ink); font-weight: 600; }
+  .meter { height: 8px; border-radius: 999px; background: var(--chip); overflow: hidden; margin-top: 6px; }
+  .meter i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--accent); transition: width .1s linear; }
+  .meter i.warn { background: var(--warning); }
+  .meter i.crit { background: var(--critical); }
+
+  .chart-card h3 { font-size: 15.5px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 10px; font-size: 13px; color: var(--body); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend b { color: var(--ink); font-weight: 600; }
+  .chart { position: relative; margin-top: 8px; touch-action: pan-y; }
+  .chart svg { display: block; width: 100%; height: 210px; overflow: visible; }
+  .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .chart .axis { fill: var(--muted); font-size: 11px; }
+  .chart .ref { stroke: var(--muted); stroke-width: 1; }
+  .chart .ref-label { fill: var(--muted); font-size: 11px; stroke: var(--surface); stroke-width: 4px; paint-order: stroke; stroke-linejoin: round; }
+  .chart .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .chart .line.s1, .chart .dot.s1 { stroke: var(--series-1); }
+  .chart .line.s2, .chart .dot.s2 { stroke: var(--series-2); }
+  .chart .dot.s1 { fill: var(--series-1); }
+  .chart .dot.s2 { fill: var(--series-2); }
+  .chart .dot { stroke: var(--surface); stroke-width: 2; }
+  .chart .cross { stroke: var(--muted); stroke-width: 1; }
+  .tip {
+    position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;
+    background: var(--ink); color: var(--bg); border-radius: 10px; padding: 8px 10px;
+    font-size: 12.5px; line-height: 1.5; white-space: nowrap; display: none;
+  }
+  .tip .t { opacity: .7; }
+  .tip .row { display: flex; align-items: center; gap: 7px; }
+  .tip .row b { font-weight: 600; min-width: 3ch; }
+  .tip .row span { opacity: .75; }
+  .wide { grid-column: 1 / -1; }
+  @media (max-width: 420px) { .tiles { gap: 8px; } .tile .value { font-size: 20px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="back" href="../../">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m11 6-6 6 6 6"/></svg>
+      Mahesh H L
+    </a>
+    <a class="btn small" href="https://github.com/Mahesh741/Mahesh741.github.io/tree/main/projects/backpressure" target="_blank" rel="noopener">Source code</a>
+    <button class="icon-btn" id="theme" type="button" aria-label="Switch between light and dark theme">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <p class="eyebrow mono">Live demo · runs in your browser</p>
+    <h1>Kafka backpressure simulator</h1>
+    <p class="lede">Two copies of the same consumer receive the same messages. One takes everything into memory. The other asks an admission gate first. Slow the downstream system and watch what each one does.</p>
+    <p class="about"><strong>What this is.</strong> A simulation of a Kafka consumer, written from scratch for this portfolio. The gate logic follows the Java library in the repository (AIMD limiter, byte budget, workflow quotas), which has its own JUnit tests. The numbers illustrate behaviour; they are not a benchmark.</p>
+  </div>
+
+  <div class="controls" role="group" aria-label="Simulation controls">
+    <div class="group">
+      <button class="btn primary" id="slow" type="button" aria-pressed="false">Slow down workflow A's downstream</button>
+    </div>
+    <div class="slider">
+      <label for="rate">Workflow A arrival rate <b class="num" id="rate-out">20 msg/s</b></label>
+      <input id="rate" type="range" min="5" max="60" step="1" value="20">
+    </div>
+    <div class="slider">
+      <label for="size">Workflow A payload size <b class="num" id="size-out">1 MB</b></label>
+      <input id="size" type="range" min="0.25" max="8" step="0.25" value="1">
+    </div>
+    <div class="group">
+      <button class="btn" id="pause" type="button">Pause</button>
+      <button class="btn" id="reset" type="button">Reset</button>
+    </div>
+  </div>
+  <p class="hint" id="hint"><b>Try it:</b> press “Slow down workflow A's downstream”. It makes that system 6 times slower, the kind of incident a third-party API has on a bad day.</p>
+
+  <div class="systems grid-2">
+    <section class="card" aria-labelledby="u-title">
+      <div class="sys-head">
+        <h2 id="u-title"><i class="key s2" aria-hidden="true"></i>Without backpressure</h2>
+        <span class="pill good" id="u-status"></span>
+      </div>
+      <p class="sub">Polls 60 records a second into memory and dispatches them on one shared pool of 16 threads.</p>
+      <div class="heap">
+        <div class="label"><span>JVM heap</span><b class="num" id="u-heap">–</b></div>
+        <div class="meter" aria-hidden="true"><i id="u-meter"></i></div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="label">OOM crashes</div><div class="value num" id="u-crashes">0</div></div>
+        <div class="tile"><div class="label">Kafka lag</div><div class="value num" id="u-lag">0</div></div>
+        <div class="tile"><div class="label">Delivered</div><div class="value num" id="u-done">0</div></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="p-title">
+      <div class="sys-head">
+        <h2 id="p-title"><i class="key s1" aria-hidden="true"></i>With backpressure</h2>
+        <span class="pill good" id="p-status"></span>
+      </div>
+      <p class="sub">Admits a message only if the concurrency limit, the workflow quota and the byte budget all allow it.</p>
+      <div class="heap">
+        <div class="label"><span>JVM heap</span><b class="num" id="p-heap">–</b></div>
+        <div class="meter" aria-hidden="true"><i id="p-meter"></i></div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="label">OOM crashes</div><div class="value num" id="p-crashes">0</div></div>
+        <div class="tile"><div class="label">Kafka lag</div><div class="value num" id="p-lag">0</div></div>
+        <div class="tile"><div class="label">Delivered</div><div class="value num" id="p-done">0</div></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px">
+    <section class="card chart-card">
+      <h3>JVM heap used</h3>
+      <p class="sub">MB over the last 60 seconds. A gap means the pod is restarting.</p>
+      <div class="legend" id="heap-legend"></div>
+      <div class="chart" id="heap-chart"></div>
+    </section>
+    <section class="card chart-card">
+      <h3>Workflow B throughput</h3>
+      <p class="sub">Messages per second for the workflow nobody touched. It should stay near 10.</p>
+      <div class="legend" id="thr-legend"></div>
+      <div class="chart" id="thr-chart"></div>
+    </section>
+    <section class="card chart-card wide">
+      <h3>Adaptive concurrency limit for workflow A, with backpressure</h3>
+      <p class="sub">The limit climbs by one per round of successes and is cut by 30% when the downstream rejects a call, so it hovers at what the downstream can take. The grey line marks 12 concurrent calls, where the downstream starts rejecting.</p>
+      <div class="chart" id="limit-chart"></div>
+    </section>
+  </div>
+
+  <div class="section">
+    <h2 class="mono">How the gate works</h2>
+    <div class="explain">
+      <div class="card">
+        <h3>Byte-based admission</h3>
+        <p>Each message's heap footprint is estimated from its payload size. The gate keeps the total for in-flight messages under a fixed budget, so memory use is bounded whatever the message sizes are.</p>
+      </div>
+      <div class="card">
+        <h3>AIMD concurrency</h3>
+        <p>Additive increase, multiplicative decrease: the same control loop TCP uses. The limit grows slowly while calls succeed and drops sharply on rejections, timeouts or heap pressure.</p>
+      </div>
+      <div class="card">
+        <h3>Workflow isolation</h3>
+        <p>Every workflow has its own limiter and may hold at most 60% of the byte budget. A slow integration fills its own quota and leaves the rest for everyone else.</p>
+      </div>
+    </div>
+    <p class="footnote">What is not admitted stays in Kafka. Overload then shows up as consumer lag, which is durable and cheap, instead of as heap growth, which ends in an OutOfMemoryError and a redelivery storm. Model: 512 MB heap, each in-flight message costs 2.5 times its payload size, each downstream handles 8 concurrent calls and rejects beyond 12.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Built by Mahesh H L · <a href="../../">Back to portfolio</a> · <a href="https://github.com/Mahesh741/Mahesh741.github.io/tree/main/projects/backpressure" target="_blank" rel="noopener">Java library and tests</a></div>
+</footer>
+
+<script src="sim.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

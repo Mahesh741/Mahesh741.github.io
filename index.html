@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mahesh H L — Backend Software Engineer</title>
+<meta name="description" content="Backend engineer with 2.8+ years building scalable microservices, multi-tenant SaaS platforms and integration frameworks with Java, Spring Boot, Kafka and AWS.">
+<meta name="author" content="Mahesh H L">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mahesh H L — Backend Software Engineer">
+<meta property="og:description" content="Java, Spring Boot, Kafka, Kubernetes. Distributed systems, multi-tenant SaaS and enterprise integrations.">
+<meta name="theme-color" content="#fbfbf9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b6e63'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  // Apply a saved theme before first paint so the page never flashes.
+  try {
+    var saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+  } catch (e) {}
+</script>
+<style>
+  :root {
+    --bg: #fbfbf9;
+    --surface: #ffffff;
+    --ink: #14181f;
+    --body: #333a45;
+    --muted: #667080;
+    --line: #e4e6e3;
+    --accent: #0b6e63;
+    --accent-ink: #ffffff;
+    --accent-soft: #e6f2f0;
+    --chip: #f1f2ef;
+    --shadow: 0 1px 2px rgba(20, 24, 31, .05), 0 8px 24px rgba(20, 24, 31, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1215;
+      --surface: #151a1f;
+      --ink: #f1f3f5;
+      --body: #c5ccd4;
+      --muted: #8c96a3;
+      --line: #252c33;
+      --accent: #5fd4c4;
+      --accent-ink: #06211d;
+      --accent-soft: #12302c;
+      --chip: #1b2127;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1215;
+    --surface: #151a1f;
+    --ink: #f1f3f5;
+    --body: #c5ccd4;
+    --muted: #8c96a3;
+    --line: #252c33;
+    --accent: #5fd4c4;
+    --accent-ink: #06211d;
+    --accent-soft: #12302c;
+    --chip: #1b2127;
+    --shadow: none;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--body);
+    font: 400 16px/1.65 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  h1, h2, h3 { color: var(--ink); margin: 0; line-height: 1.2; letter-spacing: -0.015em; }
+  p { margin: 0; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(160%) blur(10px);
+    -webkit-backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar .wrap { display: flex; align-items: center; gap: 20px; height: 60px; }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; margin-right: auto; white-space: nowrap; }
+  .brand:hover { text-decoration: none; }
+  .nav { display: flex; gap: 22px; }
+  .nav a { color: var(--muted); font-size: 14px; font-weight: 500; }
+  .nav a:hover { color: var(--ink); text-decoration: none; }
+  .icon-btn {
+    display: inline-grid; place-items: center; width: 36px; height: 36px; flex: none;
+    border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
+    color: var(--muted); cursor: pointer;
+  }
+  .icon-btn:hover { color: var(--ink); }
+  .icon-btn svg { width: 17px; height: 17px; }
+  .icon-btn .moon { display: none; }
+  :root[data-theme="dark"] .icon-btn .sun { display: none; }
+  :root[data-theme="dark"] .icon-btn .moon { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .icon-btn .sun { display: none; }
+    :root:not([data-theme="light"]) .icon-btn .moon { display: block; }
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink);
+    font-size: 14.5px; font-weight: 600; line-height: 1.2; white-space: nowrap;
+  }
+  .btn:hover { text-decoration: none; border-color: var(--muted); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.small { padding: 8px 12px; font-size: 13.5px; }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 64px 0 40px; }
+  .hero-grid { display: grid; grid-template-columns: 184px 1fr; gap: 44px; align-items: center; }
+  .photo {
+    width: 184px; height: 184px; border-radius: 28px; overflow: hidden;
+    background: var(--accent-soft); border: 1px solid var(--line); box-shadow: var(--shadow);
+    display: grid; place-items: center;
+  }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo .initials { display: none; font-size: 60px; font-weight: 700; color: var(--accent); letter-spacing: -0.03em; }
+  .photo.no-photo img { display: none; }
+  .photo.no-photo .initials { display: block; }
+  .eyebrow { font-size: 13px; color: var(--accent); font-weight: 500; letter-spacing: .02em; margin-bottom: 10px; }
+  .hero h1 { font-size: clamp(34px, 5.4vw, 48px); font-weight: 700; letter-spacing: -0.03em; }
+  .hero .lede { margin-top: 14px; font-size: 17.5px; line-height: 1.6; max-width: 60ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 16px; color: var(--muted); font-size: 14px; }
+  .meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .meta svg { width: 15px; height: 15px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 48px;
+    border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow);
+  }
+  .stat { padding: 20px 22px; border-left: 1px solid var(--line); }
+  .stat:first-child { border-left: 0; }
+  .stat b { display: block; color: var(--ink); font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+  .stat span { display: block; margin-top: 4px; font-size: 13.5px; color: var(--muted); line-height: 1.4; }
+
+  /* ---------- Sections ---------- */
+  section { padding: 44px 0; border-top: 1px solid var(--line); }
+  .sec { display: grid; grid-template-columns: 184px 1fr; gap: 44px; }
+  .sec > h2 { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); padding-top: 4px; }
+
+  /* Experience */
+  .job + .job { margin-top: 36px; padding-top: 36px; border-top: 1px dashed var(--line); }
+  .job-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; align-items: baseline; }
+  .job-head h3 { font-size: 19px; font-weight: 600; }
+  .job-head h3 span { color: var(--accent); font-weight: 600; }
+  .when { font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .where { font-size: 14px; color: var(--muted); margin-top: 2px; }
+  .points { margin-top: 16px; display: grid; gap: 12px; }
+  .points li { position: relative; padding-left: 20px; font-size: 15.5px; }
+  .points li::before { content: ""; position: absolute; left: 2px; top: .68em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: .75; }
+  .points strong { color: var(--ink); font-weight: 600; }
+
+  /* Projects */
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+  .card.wide { grid-column: 1 / -1; }
+  .card .kicker { font-size: 12px; color: var(--accent); letter-spacing: .04em; margin-bottom: 8px; }
+  .card h3 { font-size: 18px; font-weight: 600; }
+  .card p { margin-top: 10px; font-size: 15px; }
+  .card .points { margin-top: 14px; gap: 9px; }
+  .card .points li { font-size: 15px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .card .tags { margin-top: auto; padding-top: 18px; }
+  .tag { font-size: 12px; padding: 4px 9px; border-radius: 999px; background: var(--chip); color: var(--body); border: 1px solid var(--line); white-space: nowrap; }
+  .more { margin-top: 18px; font-size: 14.5px; font-weight: 500; }
+
+  /* Skills */
+  .skills { display: grid; gap: 0; }
+  .skill-row { display: grid; grid-template-columns: 170px 1fr; gap: 16px; padding: 13px 0; border-top: 1px solid var(--line); align-items: start; }
+  .skill-row:first-child { border-top: 0; padding-top: 0; }
+  .skill-row dt { color: var(--ink); font-weight: 600; font-size: 14.5px; padding-top: 2px; }
+  .skill-row dd { margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  dl { margin: 0; }
+
+  /* Education */
+  .edu + .edu { margin-top: 22px; }
+  .edu h3 { font-size: 17px; font-weight: 600; }
+  .note { margin-top: 28px; padding: 16px 18px; border-radius: 14px; background: var(--accent-soft); color: var(--body); font-size: 15px; border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent); }
+  .note strong { color: var(--ink); }
+
+  /* Contact */
+  .contact h3 { font-size: clamp(24px, 3.6vw, 30px); font-weight: 700; letter-spacing: -0.02em; }
+  .contact p { margin-top: 10px; max-width: 56ch; }
+  footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--muted); font-size: 13px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 820px) {
+    .nav { display: none; }
+    .hero { padding: 40px 0 32px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 24px; }
+    .photo { width: 132px; height: 132px; border-radius: 24px; }
+    .photo .initials { font-size: 44px; }
+    .stats { grid-template-columns: repeat(2, 1fr); margin-top: 36px; }
+    .stat:nth-child(3) { border-left: 0; }
+    .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+    .sec { grid-template-columns: 1fr; gap: 20px; }
+    section { padding: 36px 0; }
+    .cards { grid-template-columns: 1fr; }
+    .skill-row { grid-template-columns: 1fr; gap: 8px; }
+  }
+  @media (max-width: 420px) {
+    .wrap { padding: 0 16px; }
+    .stat { padding: 16px; }
+    .stat b { font-size: 22px; }
+    .topbar .btn span.long { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    .topbar, .actions, .icon-btn { display: none !important; }
+    body { background: #fff; }
+    section { padding: 20px 0; }
+    .card, .stats { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">Mahesh H L</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn small" href="Mahesh_HL_Resume.pdf" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      Resume
+    </a>
+    <button class="icon-btn" id="theme" type="button" aria-label="Switch between light and dark theme">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="hero wrap">
+    <div class="hero-grid">
+      <!-- PHOTO: save your picture as assets/profile.jpg (square, 600x600 or larger). Until then your initials show. -->
+      <div class="photo" id="photo">
+        <img src="assets/profile.jpg" alt="Portrait of Mahesh H L" width="184" height="184">
+        <span class="initials" aria-hidden="true">MH</span>
+      </div>
+      <div>
+        <p class="eyebrow mono">Backend Software Engineer</p>
+        <h1>Mahesh H L</h1>
+        <p class="lede">I build scalable microservices, multi-tenant SaaS platforms and integration frameworks with Java, Spring Boot, Kafka and AWS. For the past 2.8+ years I have worked on Aekyam, an enterprise iPaaS product, focused on reliable distributed systems and performance.</p>
+        <div class="meta">
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Bengaluru, India
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Associate Software Engineer at Acuver Consulting
+          </span>
+        </div>
+        <div class="actions">
+          <a class="btn primary" href="Mahesh_HL_Resume.pdf" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Download resume
+          </a>
+          <a class="btn" href="mailto:maheshhl741@gmail.com">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            Email
+          </a>
+          <a class="btn" href="https://linkedin.com/in/maheshhl" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="https://github.com/Mahesh741" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="https://leetcode.com/u/Mahesh741" target="_blank" rel="noopener">LeetCode</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats" aria-label="Highlights">
+      <div class="stat"><b>2.8+ yrs</b><span>building production backend systems</span></div>
+      <div class="stat"><b>~70%</b><span>lower JVM memory on 100+ MB payloads</span></div>
+      <div class="stat"><b>~30%</b><span>faster recovery (MTTR) with observability</span></div>
+      <div class="stat"><b>5+</b><span>enterprise tenants onboarded securely</span></div>
+    </div>
+  </div>
+
+  <section id="experience">
+    <div class="wrap sec">
+      <h2 class="mono">Experience</h2>
+      <div>
+        <article class="job">
+          <div class="job-head">
+            <h3>Associate Software Engineer · <span>Acuver Consulting</span></h3>
+            <span class="when mono">Mar 2024 – Present</span>
+          </div>
+          <p class="where">Bengaluru, India · Hybrid · Aekyam enterprise iPaaS</p>
+          <ul class="points">
+            <li><strong>Large payload processing.</strong> Developed a Split &amp; Merge framework with Java, Spring Boot, AWS EFS, the Jackson Streaming API and FileChannel that processes 15–100+ MB JSON/XML/CSV payloads through chunk-based parsing, parallel execution and outbound aggregation, cutting JVM memory consumption by ~70%.</li>
+            <li><strong>Multi-tenant SaaS security.</strong> Designed and implemented a multi-tenant architecture with Keycloak, JWT and RBAC, enabling secure onboarding of 5+ enterprise customers with tenant-specific authentication, authorization and strict data isolation. Configured realms, roles and client scopes across 3 environments for 100+ users.</li>
+            <li><strong>Observability.</strong> Established monitoring, log correlation and distributed tracing with Grafana, Prometheus, Loki and Tempo across 8+ microservices, reducing MTTR by ~30%.</li>
+            <li><strong>Authorization Proxy Connector.</strong> Built a Spring Boot and JWT connector that gives clients secure access to external systems through platform-managed sessions and automated token refresh, without exposing downstream credentials. Implemented AWS SigV4 and HMAC-SHA256 request signing for enterprise REST connectors in production.</li>
+            <li><strong>AI workflow builder.</strong> Engineered a LangGraph and FastAPI-powered builder that generates structured JSON workflows across 10+ enterprise connector types, including SAP, IBM MQ, REST, FTP, SFTP and Amazon S3.</li>
+            <li><strong>Vector DB abstraction.</strong> Standardized integrations across 4 vector database providers (Pinecone, Qdrant, Chroma, OpenSearch) behind a unified abstraction layer, enabling provider portability with no application-level code changes.</li>
+            <li><strong>Git-inspired versioning.</strong> Introduced a versioning framework for workflows, Lambda configurations, tenant settings and notification assets, with version history, rollback, restoration and auditability.</li>
+          </ul>
+        </article>
+
+        <article class="job">
+          <div class="job-head">
+            <h3>Software Engineer Intern · <span>Desi QnA</span></h3>
+            <span class="when mono">Nov 2022 – Mar 2023</span>
+          </div>
+          <p class="where">Bengaluru, India · Remote</p>
+          <ul class="points">
+            <li>Built a responsive web application (HTML, CSS, JavaScript, Bootstrap, PHP, MySQL) with user authentication and Google reCAPTCHA bot prevention.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap sec">
+      <h2 class="mono">Projects</h2>
+      <div>
+        <div class="cards">
+          <article class="card wide">
+            <p class="kicker mono">Featured · Aekyam iPaaS</p>
+            <h3>Kafka Outbound Backpressure &amp; Workflow Isolation</h3>
+            <p>A memory-aware backpressure mechanism that keeps the JVM stable during high-volume Kafka outbound processing, especially with large payloads.</p>
+            <ul class="points">
+              <li><strong>Byte-based admission control</strong> using estimated message memory footprints, configurable in-flight byte budgets and concurrency limits to stop uncontrolled accumulation in memory.</li>
+              <li><strong>Adaptive concurrency with AIMD</strong> (additive increase, multiplicative decrease) that regulates outbound capacity from JVM heap utilization, processing errors and system health.</li>
+              <li><strong>Workflow-level isolation</strong> by workflowId and stageId with independent resource quotas, so a slow downstream integration cannot affect unrelated workflows.</li>
+              <li><strong>Load tested</strong> across payload sizes and concurrency levels, analyzing throughput, heap consumption and Kubernetes pod memory to tune stability under load.</li>
+            </ul>
+            <div class="tags">
+              <span class="tag mono">Java</span><span class="tag mono">Kafka</span><span class="tag mono">Backpressure</span><span class="tag mono">AIMD</span><span class="tag mono">Kubernetes</span><span class="tag mono">Load testing</span>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Order Processing System</h3>
+            <p>A Kafka-based event-driven backend supporting asynchronous order processing, retry handling and dead-letter recovery.</p>
+            <div class="tags">
+              <span class="tag mono">Spring Boot</span><span class="tag mono">Kafka</span><span class="tag mono">PostgreSQL</span>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>RAG-Based Q&amp;A System</h3>
+            <p>A retrieval-augmented generation pipeline that ingests and chunks documents into a vector store and serves context-aware answers through an OpenAI-backed LLM, with a React frontend for querying.</p>
+            <div class="tags">
+              <span class="tag mono">LangChain</span><span class="tag mono">FastAPI</span><span class="tag mono">Qdrant</span><span class="tag mono">OpenAI API</span><span class="tag mono">React</span>
+            </div>
+          </article>
+
+          <article class="card wide">
+            <h3>Deep CNN for Forest Fire Classification</h3>
+            <p>A deep learning system that classifies forest fires from high-resolution multi-spectral satellite imagery. An ensemble of CNN models feeds post-processing neural networks that combine model predictions with satellite metadata to produce the final classification.</p>
+            <div class="tags">
+              <span class="tag mono">Deep learning</span><span class="tag mono">CNN ensemble</span><span class="tag mono">Satellite imagery</span>
+            </div>
+          </article>
+        </div>
+        <p class="more"><a href="https://github.com/Mahesh741" target="_blank" rel="noopener">More on GitHub →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap sec">
+      <h2 class="mono">Skills</h2>
+      <dl class="skills">
+        <div class="skill-row"><dt>Languages</dt><dd><span class="tag mono">Java 17</span></dd></div>
+        <div class="skill-row"><dt>Backend</dt><dd><span class="tag mono">Spring Boot</span><span class="tag mono">REST APIs</span><span class="tag mono">Microservices</span><span class="tag mono">Hibernate/JPA</span><span class="tag mono">Kafka</span></dd></div>
+        <div class="skill-row"><dt>Security</dt><dd><span class="tag mono">Keycloak</span><span class="tag mono">JWT</span><span class="tag mono">RBAC</span></dd></div>
+        <div class="skill-row"><dt>Databases</dt><dd><span class="tag mono">PostgreSQL</span><span class="tag mono">MongoDB</span><span class="tag mono">MySQL</span></dd></div>
+        <div class="skill-row"><dt>Cloud &amp; DevOps</dt><dd><span class="tag mono">Kubernetes</span><span class="tag mono">Docker</span><span class="tag mono">Git</span></dd></div>
+        <div class="skill-row"><dt>Observability</dt><dd><span class="tag mono">Grafana</span><span class="tag mono">Prometheus</span><span class="tag mono">Loki</span><span class="tag mono">Tempo</span></dd></div>
+        <div class="skill-row"><dt>AI &amp; Integration</dt><dd><span class="tag mono">LangChain</span><span class="tag mono">LangGraph</span><span class="tag mono">RAG</span><span class="tag mono">Pinecone</span><span class="tag mono">Qdrant</span><span class="tag mono">Chroma</span><span class="tag mono">OpenSearch</span><span class="tag mono">OpenAI API</span></dd></div>
+        <div class="skill-row"><dt>Practices</dt><dd><span class="tag mono">Agile/Scrum</span><span class="tag mono">JUnit 5</span><span class="tag mono">Code reviews</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="education">
+    <div class="wrap sec">
+      <h2 class="mono">Education</h2>
+      <div>
+        <article class="edu">
+          <div class="job-head">
+            <h3>B.E. in Computer Science &amp; Engineering</h3>
+            <span class="when mono">2018 – 2022</span>
+          </div>
+          <p class="where">Maharaja Institute of Technology Mysore · Mysore, Karnataka</p>
+        </article>
+        <article class="edu">
+          <div class="job-head">
+            <h3>Java Full Stack Development, Certification</h3>
+            <span class="when mono">2023 – 2024</span>
+          </div>
+          <p class="where">Great Learning · Bengaluru, Karnataka</p>
+        </article>
+        <p class="note"><strong>Achievements.</strong> Solved 200+ coding problems across <a href="https://leetcode.com/u/Mahesh741" target="_blank" rel="noopener">LeetCode</a>, HackerRank and GeeksforGeeks, and earned a 5-Star Gold Badge in Java on HackerRank.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap sec">
+      <h2 class="mono">Contact</h2>
+      <div>
+        <h3>Let's talk.</h3>
+        <p>The quickest way to reach me is email. I am happy to talk about backend engineering roles, distributed systems and integration platforms.</p>
+        <div class="actions">
+          <a class="btn primary" href="mailto:maheshhl741@gmail.com">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            maheshhl741@gmail.com
+          </a>
+          <a class="btn" href="https://linkedin.com/in/maheshhl" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="https://github.com/Mahesh741" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="Mahesh_HL_Resume.pdf" download>Resume (PDF)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">© <span id="year">2026</span> Mahesh H L · Bengaluru, India</div>
+</footer>
+
+<script>
+  // Photo: fall back to initials if assets/profile.jpg is missing.
+  (function () {
+    var box = document.getElementById('photo');
+    var img = box.querySelector('img');
+    function missing() { box.classList.add('no-photo'); }
+    img.addEventListener('error', missing);
+    if (img.complete && img.naturalWidth === 0) missing();
+  })();
+
+  // Theme toggle, remembered per browser.
+  document.getElementById('theme').addEventListener('click', function () {
+    var root = document.documentElement;
+    var current = root.getAttribute('data-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG Q&amp;A Demo — Mahesh H L</title>
+<meta name="description" content="Ask questions about Mahesh H L's experience and projects. A retrieval pipeline in the browser finds the relevant passages and answers only from them, with citations.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b6e63'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/demo.css">
+<script src="../assets/demo.js"></script>
+<style>
+  .ask { display: flex; gap: 10px; margin-top: 24px; }
+  .ask input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 16px; }
+  .ask input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .samples { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .samples button { font-size: 13.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--body); cursor: pointer; }
+  .samples button:hover { border-color: var(--muted); color: var(--ink); }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; margin-top: 20px; align-items: start; }
+  .stack { display: grid; gap: 16px; min-width: 0; }
+  .card h2 { font-size: 16px; font-weight: 600; }
+  .head-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .answer-text { margin-top: 12px; font-size: 17px; line-height: 1.6; color: var(--ink); }
+  .answer-text .cite { display: inline-block; font-size: 11.5px; font-weight: 600; line-height: 1; padding: 3px 6px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); margin-left: 4px; vertical-align: 2px; }
+  .answer-text.refused { color: var(--body); }
+  .placeholder { margin-top: 12px; color: var(--muted); font-size: 15px; }
+
+  .step { margin-top: 18px; }
+  .step:first-of-type { margin-top: 14px; }
+  .step h3 { font-size: 12.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .terms { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .terms .tag.unknown { text-decoration: line-through; opacity: .6; }
+  .terms .tag.added { border-style: dashed; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .hits { display: grid; gap: 10px; margin-top: 10px; }
+  .hit { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .hit.used { border-color: var(--accent); }
+  .hit-head { display: flex; align-items: center; gap: 8px; font-size: 13px; flex-wrap: wrap; }
+  .hit-head .rank { font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 2px 6px; font-size: 11.5px; }
+  .hit-head b { color: var(--ink); font-weight: 600; }
+  .hit-head .score { margin-left: auto; color: var(--muted); display: inline-flex; align-items: center; gap: 8px; }
+  .scorebar { width: 64px; height: 6px; border-radius: 999px; background: var(--chip); overflow: hidden; }
+  .scorebar i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+  .hit p { font-size: 14px; margin-top: 8px; color: var(--body); }
+  mark { background: color-mix(in srgb, var(--warning) 28%, transparent); color: inherit; border-radius: 3px; padding: 0 1px; }
+
+  .docs { display: grid; gap: 6px; margin-top: 12px; }
+  .docs li { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding: 7px 0; border-top: 1px solid var(--line); }
+  .docs li:first-child { border-top: 0; }
+  .docs span { color: var(--muted); white-space: nowrap; }
+  .stats { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  form.add { display: grid; gap: 10px; margin-top: 12px; }
+  form.add label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+  form.add input, form.add textarea { padding: 9px 11px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); font-size: 14.5px; width: 100%; }
+  form.add textarea { min-height: 110px; resize: vertical; }
+  form.add .btn { justify-self: start; }
+
+  .compare { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  .compare th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12.5px; padding: 0 14px 8px 0; }
+  .compare td { padding: 10px 14px 10px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .compare td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .scroll { overflow-x: auto; }
+
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .ask { flex-direction: column; } .hit-head .score { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="back" href="../../">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m11 6-6 6 6 6"/></svg>
+      Mahesh H L
+    </a>
+    <a class="btn small" href="https://github.com/Mahesh741/Mahesh741.github.io/tree/main/projects/rag-qa" target="_blank" rel="noopener">Source code</a>
+    <button class="icon-btn" id="theme" type="button" aria-label="Switch between light and dark theme">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <p class="eyebrow mono">Live demo · runs in your browser</p>
+    <h1>Ask my portfolio</h1>
+    <p class="lede">Ask a question about my experience or projects. The page retrieves the most relevant passages from a small set of documents and answers only from them, citing each source. If the documents do not cover the question, it says so.</p>
+    <p class="about"><strong>What this is.</strong> The retrieval half of a RAG pipeline, running without a server: chunking, a BM25 keyword index and answers assembled from retrieved sentences. The full project in the repository uses OpenAI embeddings in Qdrant for retrieval and an LLM to write the answer, behind a FastAPI service. No language model runs on this page.</p>
+  </div>
+
+  <form class="ask" id="ask-form">
+    <input id="question" type="text" autocomplete="off" aria-label="Your question" placeholder="Ask about experience, projects, skills…" maxlength="300">
+    <button class="btn primary" type="submit">Ask</button>
+  </form>
+  <div class="samples" id="samples" aria-label="Example questions"></div>
+
+  <div class="layout">
+    <div class="stack">
+      <section class="card" aria-live="polite">
+        <div class="head-row">
+          <h2>Answer</h2>
+          <span id="verdict"></span>
+        </div>
+        <div id="answer"><p class="placeholder">Pick an example above or type your own question.</p></div>
+      </section>
+
+      <section class="card" id="trace" hidden>
+        <h2>How this answer was produced</h2>
+        <div class="step">
+          <h3 class="mono">1 · Query terms</h3>
+          <div class="terms" id="terms"></div>
+          <p class="note" id="terms-note"></p>
+        </div>
+        <div class="step">
+          <h3 class="mono">2 · Retrieved passages</h3>
+          <div class="hits" id="hits"></div>
+        </div>
+        <div class="step">
+          <h3 class="mono">3 · Grounding check</h3>
+          <p class="note" id="grounding"></p>
+        </div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="card">
+        <h2>Indexed documents</h2>
+        <ul class="docs" id="docs"></ul>
+        <p class="stats" id="stats"></p>
+      </section>
+      <section class="card">
+        <h2>Add your own document</h2>
+        <p class="sub">It is chunked and indexed in your browser and never leaves this page.</p>
+        <form class="add" id="add-form">
+          <label>Title <input id="doc-title" type="text" maxlength="80" required></label>
+          <label>Text <textarea id="doc-text" maxlength="20000" required></textarea></label>
+          <button class="btn" type="submit">Index document</button>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="mono">This page and the full project</h2>
+    <div class="card scroll">
+      <table class="compare">
+        <thead><tr><th>Stage</th><th>On this page</th><th>In the repository</th></tr></thead>
+        <tbody>
+          <tr><td>Chunking</td><td>Sentence-aware, 60 words, one sentence of overlap</td><td>LangChain recursive splitter, 800 characters, 120 overlap</td></tr>
+          <tr><td>Retrieval</td><td>BM25 keyword index with light stemming and query expansion</td><td>OpenAI embeddings stored in Qdrant, cosine similarity</td></tr>
+          <tr><td>Answer</td><td>The best-matching retrieved sentences, quoted with citations</td><td>An OpenAI chat model instructed to answer only from the retrieved context</td></tr>
+          <tr><td>No relevant context</td><td>Refuses to answer</td><td>Refuses without calling the model</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="footnote">Keyword retrieval only finds passages that share words with the question, which is why the full project uses embeddings. The grounding rule is the same in both: no relevant passage, no answer.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Built by Mahesh H L · <a href="../../">Back to portfolio</a> · <a href="https://github.com/Mahesh741/Mahesh741.github.io/tree/main/projects/rag-qa" target="_blank" rel="noopener">FastAPI, LangChain and Qdrant backend</a></div>
+</footer>
+
+<script src="corpus.js"></script>
+<script src="rag.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
